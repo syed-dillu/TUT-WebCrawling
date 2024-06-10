@@ -20,8 +20,7 @@ sys.path.append(dir)
 from utils.launch import Initiate
 from elements import webElements
 from excel_data.crawl_data import get_crawl_input,crawl_output
-from utils.operate import click_element, sendkeys_element
-
+from utils.operate import click_element, sendkeys_element, get_screenshot
 
 
 class Web_Add_Site(Initiate):
@@ -52,12 +51,10 @@ class Web_Add_Site(Initiate):
             website_url = self.driver.find_element(By.XPATH, webElements.website_url_xpath)
             sendkeys_element(website_url,website)
 
-
             time.sleep(1)
 
             trade_el = self.driver.find_element(By.XPATH, webElements.trade_xpath)
             sendkeys_element(trade_el,tradename)
-
 
             if website != '':
 
@@ -78,6 +75,8 @@ class Web_Add_Site(Initiate):
 
             time.sleep(2)
 
+            #get_screenshot(Test_case)
+
             self.driver.refresh()
 
             results.append({
@@ -91,6 +90,7 @@ class Web_Add_Site(Initiate):
     'Result': 'Pass'
 
 })
+
             webform = pd.DataFrame(results)
 
             with pd.ExcelWriter(crawl_output, mode='a',if_sheet_exists='replace', engine='openpyxl') as writer:
@@ -102,5 +102,7 @@ if (__name__) == "__main__":
     crawl.browser()
     crawl.login()
     crawl.crawl_input()
+
+
 
 

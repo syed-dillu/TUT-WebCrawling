@@ -113,13 +113,18 @@ class Web_Crawl_Results(Initiate):
                 risk_status_element = self.driver.find_element(By.XPATH, webElements.risk_status_xpath)
                 risk__status = risk_status_element.text.strip().replace('\n', ' : ')
 
-
                 mcc_element = self.driver.find_element(By.XPATH,webElements.mcc_buss_xpath)
                 crawl_mcc_data = mcc_element.text.strip().replace('\n', ' : ')
 
                 mcc_risk_element = self.driver.find_element(By.XPATH,webElements.mcc_risk_xpath)
                 crawl_risk = mcc_risk_element.text.strip().replace('\n', ' : ')
 
+
+                """
+                    RISK INDICATOR
+                    Business Risk
+
+                """
 
                 mcc_trans_element = self.driver.find_element(By.XPATH, webElements.mcc_trans_xpath)
                 crawl_mcc_trans = mcc_trans_element.text.strip().replace('\n', ' : ')

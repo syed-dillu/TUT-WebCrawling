@@ -10,11 +10,12 @@ import allure
 import os
 myDir = os.getcwd()
 sys.path.append(myDir)
-
 from helper import *
+
 load_dotenv()
 from elements.loginElements import *
 from messages.loginMessage import *
+
 url = os.getenv("URL")
 email = os.getenv("EMAIL")
 password = os.getenv("PASSWORD")

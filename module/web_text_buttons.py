@@ -38,7 +38,6 @@ class Web_UI_Elements(Initiate):
 
         web_crawl = self.driver.find_element(By.XPATH, webElements.web_crawl_xpath)
         web_main = web_crawl.text
-
         self.validation(web_crawl,web_main)
 
         web_side_element = self.driver.find_element(By.XPATH, webElements.web_history_xpath)
@@ -82,7 +81,6 @@ class Web_UI_Elements(Initiate):
         self.validation(download_sample_element,downsample_text)
 
         time.sleep(1)
-
 
         file_upload_btn= self.driver.find_element(By.XPATH,webElements.file_upload_btn_xpath)
         file_upload_btn_text = file_upload_btn.text
@@ -253,7 +251,6 @@ class Web_UI_Elements(Initiate):
         if not text:
             response.append(f"[ ]")
 
-
         try:
 
             self.wait.until(EC.element_to_be_clickable(element))
@@ -275,7 +272,7 @@ class Web_UI_Elements(Initiate):
             else:
                 result_status = "Pass"
 
-            if (i == "[ test ] Button not responding"):
+            if (i == "[ test ]  -  Button responding"):
                 continue
    
             self.results.append({

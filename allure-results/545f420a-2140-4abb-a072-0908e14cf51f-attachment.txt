@@ -1,0 +1,17 @@
+                                                                        
+✔ Title is correct :  Tutelar | Risk and Fraud Assessment | Fintech
+                                                                        
+✔ URL is correct : https://stgapp.tutelar.io/signin
+                                                                        
+✔ Login page gets visible
+                                                                        
+✔ User entered the email address.:syed.ahamed@ippopay.com
+                                                                        
+✔ User entered the password.: *******
+                                                                        
+✔ Terms and conditions check box clicked
+                                                                        
+✔ User clicked on the login button.
+                                                                        
+✔ User successfully logged in.
+                                                                        

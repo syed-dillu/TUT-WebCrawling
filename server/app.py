@@ -30,7 +30,13 @@ class Web_Streamlit():
 
     results= []
 
+    def crawl_data(self):
+        from module.web_odd_flow import Web_ODD
+        Web_ODD.crawl_data(self)
+
+
     
+
     def validation(self,element,text):
 
         from module.web_text_buttons import Web_UI_Elements
@@ -92,7 +98,6 @@ class Web_Streamlit():
         return ({
             Web_UI_Elements.crawl(self),
         })
-    
 
     def web_add_site(self):
         from module.web_add_site import Web_Add_Site
@@ -112,15 +117,47 @@ class Web_Streamlit():
             Web_Crawl_Results.crawl(self),
             Web_Crawl_Results.crawl_result(self)
         }
+    
+    def web_run_odd(self):
+        from module.web_odd_flow import Web_ODD
 
+        self.login()
+
+        return {
+            Web_ODD.crawl(self),
+            Web_ODD.parent_data(self),
+            Web_ODD.child_data(self),
+            Web_ODD.print_excel(self)
+        }
+
+
+    def web_validate_list(self):
+        from module.web_history_report import Web_History_Page
+
+        self.login()
+
+        return{
+            Web_History_Page.crawl(self),
+            Web_History_Page.history_report(self),
+            Web_History_Page.validate_report(self)
+        }
+    
+    def web_multiple_site(self):
+        from module.web_multiple_site import WebCrawl
+        self.login()
+        return ({
+            WebCrawl.crawl(self),
+        })
 
 st.title("Web crawling flow with test cases")
 
 add_site = st.button("Add Site")
-web_crawl_elements  = st.button("Web Crawling Elements")
 listing_page = st.button("Web List Page")
-crawl_results = st.button("Crawl Results")
-
+web_crawl_elements  = st.button("Web Crawling Elements")
+# crawl_results = st.button("Crawl Results")
+run_odd = st.button("Run ODD")
+validate_list_page = st.button("Web Validate List")
+add_mutliple = st.button("Add Multiple Site")
 
 
 try:
@@ -134,8 +171,15 @@ try:
     if listing_page:
         Web_Streamlit().web_list_page()
 
-    if crawl_results:
-        Web_Streamlit().web_crawl_results()
+    if run_odd:
+        Web_Streamlit().web_run_odd()
+
+    if validate_list_page:
+        Web_Streamlit().web_validate_list()
+
+    if add_mutliple:
+        Web_Streamlit().web_multiple_site()
+
 
 except Exception as e:
     print(e)
