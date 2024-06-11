@@ -149,6 +149,19 @@ class Web_Streamlit():
             WebCrawl.crawl(self),
         })
 
+
+    def web_external_api(self):
+        from web_crawling.web_external_server import Web_external
+        api  = Web_external()
+        return {
+            api.initiate_api(),
+            api.status_check(),
+            api.result_check()
+        }
+
+
+
+
 st.title("Web crawling flow with test cases")
 
 add_site = st.button("Add Site")
@@ -158,6 +171,7 @@ web_crawl_elements  = st.button("Web Crawling Elements")
 run_odd = st.button("Run ODD")
 validate_list_page = st.button("Web Validate List")
 add_mutliple = st.button("Add Multiple Site")
+web_external = st.button("Web External Api")
 
 
 try:
@@ -179,6 +193,9 @@ try:
 
     if add_mutliple:
         Web_Streamlit().web_multiple_site()
+
+    if web_external:
+        Web_Streamlit().web_external_api()
 
 
 except Exception as e:

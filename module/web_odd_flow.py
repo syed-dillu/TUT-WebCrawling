@@ -32,7 +32,7 @@ class Web_ODD(Initiate):
         self.history_odd_txt = ''
         self.history_logs_txt = ''
 
-        self.website = "https://www.khazanajewellery.com/"
+        self.website = "https://www.shoppersstop.com/"
         self.trade = random.choices(get_excel_trade())
 
         self.driver.implicitly_wait(50)
