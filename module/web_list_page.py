@@ -1,4 +1,4 @@
-from selenium import webdriver
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
@@ -8,7 +8,6 @@ from allure_commons.types import AttachmentType
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 import time
-from openpyxl.styles import Alignment
 import pandas as pd
 import sys
 import os
@@ -17,11 +16,12 @@ import random
 dir = os.getcwd()
 sys.path.append(dir)
 
-from utils.launch import Initiate
+from utils.launch import Initiate,environ
 from elements import webElements
 from excel_data.crawl_data import *
+from excel_data.check_excel import write_excel
+
 from helper import *
-from utils.operate import click_element, sendkeys_element
 
 
 class Web_List_Page(Initiate):
@@ -37,35 +37,7 @@ class Web_List_Page(Initiate):
         time.sleep(2)
 
         web_crawl = self.driver.find_element(By.XPATH, webElements.web_crawl_xpath)
-        click_element(web_crawl)
-
-        # add_site = self.driver.find_element(By.XPATH, webElements.add_site_xpath)
-        # click_element(add_site)
-
-        # website_url = self.driver.find_element(By.XPATH, webElements.website_url_xpath)
-        # sendkeys_element(website_url,self.website)
-
-        # time.sleep(1)
-
-        # trade_el = self.driver.find_element(By.XPATH, webElements.trade_xpath)
-        # sendkeys_element(trade_el,self.trade)
-
-
-        # crawling_drop = self.driver.find_element(By.XPATH, webElements.crawling_drop_xpath)
-        # click_element(crawling_drop)
-
-
-        # crawling_select = self.driver.find_element(By.XPATH, webElements.crawling_select_xpath)
-        # click_element(crawling_select)
-
-
-        # time.sleep(2)
-
-        # allure.attach(self.driver.get_screenshot_as_png(), name=f'Screenshot : {"Crawled Data"}', attachment_type=AttachmentType.PNG)
-
-        # crawling_btn = self.driver.find_element(By.XPATH, webElements.crawling_btn_xpath)
-        # click_element(crawling_btn)
-
+        self.driver.execute_script("arguments[0].click();", web_crawl)
 
         time.sleep(2)
 
@@ -111,8 +83,16 @@ class Web_List_Page(Initiate):
                 crawl_status_element = self.driver.find_element(By.XPATH, webElements.list_crawl_status_xpath)
                 crawl__status = crawl_status_element.text
 
+                crawl_time_element = self.driver.find_element(By.CSS_SELECTOR, webElements.list_time_taken)
+                crawl_time = crawl_time_element.text
+
                 risk_status_element = self.driver.find_element(By.XPATH,webElements.list_risk_xpath)
                 risk_status = risk_status_element.text
+
+                allure.attach(self.driver.get_screenshot_as_png(),name = "Screenshot - Crawling list page",attachment_type=AttachmentType.PNG)
+                time.sleep(1)
+
+                Web_List_Page.logout(self)
 
                 break
 
@@ -123,9 +103,11 @@ class Web_List_Page(Initiate):
             "Trade Name" : trade_name,
             "Created date" : crawl_start,
             "Crawling Percentage" :percent_crawl,
+            "Crawling Time taken": crawl_time,
             "Crawling Status" : crawl__status,
             "Risk status" : risk_status,
             "Risk score" :risk_score,
+
 
         }
 
@@ -133,7 +115,7 @@ class Web_List_Page(Initiate):
 
         results = []
 
-        for key, value in self.list_data.items():
+        for i, (key, value) in enumerate(self.list_data.items(), start=1):
             print(getLine())
             print(f'✔ {key} : {value}')
 
@@ -145,17 +127,21 @@ class Web_List_Page(Initiate):
             print(getLine())
 
             results.append({
-                'Test Scenario': 'Check web crawl list page',
-                'Test Case':f'✔ Check =  [ {key} ]  =  Present or Not',
-                'Actual output': f'✔ {key}    :   [ {value} ]  =  Present',
-                'Expected output': f'✔ [ {key} ]  should present',
-                'Result': result_status
+                "Test Case ID" :f'TC_00{i}',
+                'Test Scenerio': f'✔ Verify :\n[ {key} ] Present or Not',
+                'Preconditions':f'User is logged in and on the Web Crawling Listing page',
+                'Test Steps':f'1. Click on the Web Crawling button\n2. In listing page verify :\n[ {key} ]',
+                'Actual output': f'✔ {key}  :\n[ {value} ]  Present',
+                'Expected output': f'✔ [ {key} ] \nshould present',
+                'Result': result_status,
+                'Test Environment':environ,
+                'Priority':'Medium',
             })
 
-        webform = pd.DataFrame(results)
+            write_excel(results,'Web Listing Page')
 
-        with pd.ExcelWriter(crawl_output,mode='a', if_sheet_exists='replace' ,  engine='openpyxl' ) as writer:
-            webform.to_excel(writer,sheet_name='Web listing page')
+
+
 
 if (__name__) == "__main__":
     crawl = Web_List_Page()

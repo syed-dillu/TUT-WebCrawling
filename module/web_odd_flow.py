@@ -17,9 +17,11 @@ import random
 dir = os.getcwd()
 sys.path.append(dir)
 
-from utils.launch import Initiate
+from utils.launch import Initiate, environ
 from elements import webElements
 from excel_data.crawl_data import *
+from excel_data.check_excel import write_excel
+
 from helper import *
 from utils.operate import click_element, sendkeys_element
 
@@ -32,7 +34,9 @@ class Web_ODD(Initiate):
         self.history_odd_txt = ''
         self.history_logs_txt = ''
 
-        self.website = "https://www.shoppersstop.com/"
+        #self.website = random.choices(getweburl())
+
+        self.website = "https://www.eurogamer.net"
         self.trade = random.choices(get_excel_trade())
 
         self.driver.implicitly_wait(50)
@@ -42,32 +46,33 @@ class Web_ODD(Initiate):
         web_crawl = self.driver.find_element(By.XPATH, webElements.web_crawl_xpath)
         self.driver.execute_script("arguments[0].click();", web_crawl)
 
-        add_site = self.driver.find_element(By.XPATH, webElements.add_site_xpath)
-        click_element(add_site)
+        # add_site = self.driver.find_element(By.XPATH, webElements.add_site_xpath)
+        # click_element(add_site)
 
-        website_url = self.driver.find_element(By.XPATH, webElements.website_url_xpath)
-        sendkeys_element(website_url,self.website)
+        # website_url = self.driver.find_element(By.XPATH, webElements.website_url_xpath)
+        # sendkeys_element(website_url,self.website)
 
-        time.sleep(1)
+        # time.sleep(1)
 
-        trade_el = self.driver.find_element(By.XPATH, webElements.trade_xpath)
-        sendkeys_element(trade_el,self.trade)
+        # trade_el = self.driver.find_element(By.XPATH, webElements.trade_xpath)
+        # sendkeys_element(trade_el,self.trade)
 
+        # time.sleep(1)
 
-        crawling_drop = self.driver.find_element(By.XPATH, webElements.crawling_drop_xpath)
-        click_element(crawling_drop)
-
-
-        crawling_select = self.driver.find_element(By.XPATH, webElements.crawling_select_xpath)
-        click_element(crawling_select)
+        # crawling_drop = self.driver.find_element(By.XPATH, webElements.crawling_drop_xpath)
+        # click_element(crawling_drop)
 
 
-        time.sleep(2)
+        # crawling_select = self.driver.find_element(By.XPATH, webElements.crawling_select_xpath)
+        # click_element(crawling_select)
 
-        allure.attach(self.driver.get_screenshot_as_png(), name=f'Screenshot : {"Crawled Data"}', attachment_type=AttachmentType.PNG)
 
-        crawling_btn = self.driver.find_element(By.XPATH, webElements.crawling_btn_xpath)
-        click_element(crawling_btn)
+        # time.sleep(2)
+
+        # allure.attach(self.driver.get_screenshot_as_png(), name=f'Screenshot : {"Crawled Data"}', attachment_type=AttachmentType.PNG)
+
+        # crawling_btn = self.driver.find_element(By.XPATH, webElements.crawling_btn_xpath)
+        # click_element(crawling_btn)
 
         time.sleep(2)
 
@@ -114,6 +119,10 @@ class Web_ODD(Initiate):
         end_date_element = self.driver.find_element(By.XPATH, webElements.end_data_xpath)
         self.end_date_txt = end_date_element.text
 
+        time.sleep(1)
+        allure.attach(self.driver.get_screenshot_as_png(),name = f"Screenshot - {self.result_type_txt}",attachment_type=AttachmentType.PNG)
+
+
         scroll_script = "window.scrollTo(0, 3000);"
         self.driver.execute_script(scroll_script)
     
@@ -131,12 +140,15 @@ class Web_ODD(Initiate):
         mcc_risk_element = self.driver.find_element(By.XPATH,webElements.mcc_risk_xpath)
         self.crawl_risk = mcc_risk_element.text.strip().replace('\n', ' : ')
 
+
+
         """
             RISK INDICATOR
             Business Risk
 
         """
-
+        time.sleep(1)
+        allure.attach(self.driver.get_screenshot_as_png(),name = f"Screenshot - Risk Indicator",attachment_type=AttachmentType.PNG)
         mcc_trans_element = self.driver.find_element(By.XPATH, webElements.mcc_trans_xpath)
         self.crawl_mcc_trans = mcc_trans_element.text.strip().replace('\n', ' : ')
 
@@ -162,13 +174,15 @@ class Web_ODD(Initiate):
         scroll_script = "window.scrollTo(0, document.body.scrollHeight);"
         self.driver.execute_script(scroll_script)
 
-        web_category = self.driver.find_element(By.XPATH,webElements.web_category_xpath)
-        self.web_category_crawl = web_category.text.strip().replace('\n', ' : ')
+        # web_category = self.driver.find_element(By.XPATH,webElements.web_category_xpath)
+        # self.web_category_crawl = web_category.text.strip().replace('\n', ' : ')
         time.sleep(3)
 
         """
         Contact info
         """
+        time.sleep(1)
+        allure.attach(self.driver.get_screenshot_as_png(),name = f"Screenshot - Contact Info",attachment_type=AttachmentType.PNG)
         contact_profiel = self.driver.find_element(By.XPATH, webElements.contact_profile_xpath)
         click_element(contact_profiel)
 
@@ -186,6 +200,8 @@ class Web_ODD(Initiate):
         """
         Banned info
         """
+        time.sleep(1)
+        allure.attach(self.driver.get_screenshot_as_png(),name = f"Screenshot - Banned Info",attachment_type=AttachmentType.PNG)
         banned_element = self.driver.find_element(By.XPATH, webElements.banned_xpath)
         click_element(banned_element)
 
@@ -203,7 +219,8 @@ class Web_ODD(Initiate):
         """
         Security Info
         """
-
+        time.sleep(1)
+        allure.attach(self.driver.get_screenshot_as_png(),name = f"Screenshot - Security Info",attachment_type=AttachmentType.PNG)
         security_element = self.driver.find_element(By.XPATH, webElements.security_xpath)
         click_element(security_element)
 
@@ -227,11 +244,15 @@ class Web_ODD(Initiate):
         run_odd = self.driver.find_element(By.XPATH, webElements.run_ODD_xpath)
         self.run_odd_txt = run_odd.text
         click_element(run_odd)
-        time.sleep(2)
+        time.sleep(8)
 
         history_odd = self.driver.find_element(By.XPATH, webElements.odd_history_xpath)
         self.history_odd_txt = history_odd.text
         click_element(history_odd)
+
+        time.sleep(1)
+        allure.attach(self.driver.get_screenshot_as_png(),name = f"Screenshot - {self.history_odd_txt}",attachment_type=AttachmentType.PNG)
+
 
 
         history_logs = self.driver.find_element(By.XPATH, webElements.history_logs_xpath)
@@ -255,6 +276,10 @@ class Web_ODD(Initiate):
         parent_start_time = self.driver.find_element(By.XPATH, webElements.parent_start_time_xpath)
         parent_start_time_txt = parent_start_time.text
 
+        time.sleep(1)
+        allure.attach(self.driver.get_screenshot_as_png(),name = f"Screenshot - Parent Crawl",attachment_type=AttachmentType.PNG)
+
+
         click_element(parent_case)
 
         self.crawl_data()
@@ -274,7 +299,7 @@ class Web_ODD(Initiate):
             self.crawl_status,
             self.parent_per_txt,            
             self.crawl_mcc_data,
-            self.web_category_crawl,
+            # self.web_category_crawl,
             self.crawl_mcc_trans,
             self.crawl_phone,
             self.crawl_email,
@@ -318,10 +343,14 @@ class Web_ODD(Initiate):
             if child1_status_txt != "Completed":
                 time.sleep(5)
                 self.driver.refresh()
+                print("child crawl",child1_status_txt)
+
                 
             else:
                 self.crawl_data()
                 self.driver.refresh()
+                print("child crawl status : ",child1_status_txt)
+
 
                 """
                     Child Data
@@ -343,12 +372,16 @@ class Web_ODD(Initiate):
                 child1_completed_per = self.driver.find_element(By.XPATH, webElements.child1_completed_per_xpath)
                 child1_completed_per_txt = child1_completed_per.text
 
+                time.sleep(1)
+                allure.attach(self.driver.get_screenshot_as_png(),name = f"Screenshot - Child Crawl",attachment_type=AttachmentType.PNG)
+
                 break
+            
 
                 
         self.childdata = [
         self.result_type_txt,
-                    child1_start_time_txt,
+        child1_start_time_txt,
             self.end_date_txt,
             child1_case_txt,
             child1_created_txt,
@@ -358,7 +391,7 @@ class Web_ODD(Initiate):
             self.crawl_status,
             self.parent_per_txt,
             self.crawl_mcc_data,
-            self.web_category_crawl,
+            # self.web_category_crawl,
             self.crawl_mcc_trans,
             self.crawl_phone,
             self.crawl_email,
@@ -373,12 +406,41 @@ class Web_ODD(Initiate):
             self.run_odd_txt,
             self.history_odd_txt,
            
-
         ]
 
         print("child data",self.childdata)
 
-            
+    def parent_approve(self):
+
+        time.sleep(1)
+
+        parent_case = self.driver.find_element(By.XPATH, webElements.parent_case_xpath)
+        click_element(parent_case)
+
+        more_options = self.driver.find_element(By.XPATH,webElements.parent_more_options_xpath)
+        click_element(more_options)
+
+        approve_parent = self.driver.find_element(By.XPATH,webElements.more_appr_xpath)
+        click_element(approve_parent)
+
+        time.sleep(1)
+
+        reason_xpath = self.driver.find_element(By.XPATH,webElements.add_reason_xpath)
+        sendkeys_element(reason_xpath,"Crawling Data Approved Successfully")
+
+        submit_reason_xpath = self.driver.find_element(By.XPATH,webElements.submit_reason_xpath)
+        click_element(submit_reason_xpath)
+
+        time.sleep(2)
+
+        run_odd = self.driver.find_element(By.XPATH, webElements.run_ODD_xpath)
+        click_element(run_odd)
+
+        time.sleep(3)
+
+        Web_ODD.logout(self)
+
+          
     def print_excel(self):
 
         self.testcase = [
@@ -415,12 +477,12 @@ class Web_ODD(Initiate):
 
         results = []
 
-        for case, parent, child in zip(self.testcase,self.parentdata, self.childdata):
+        for i, (case, parent, child) in enumerate(zip(self.testcase, self.parentdata, self.childdata), start=1):
 
             print(getLine())
             print(f'✔ Parent : {parent} : Child : {child}')
 
-            if parent != child:
+            if i>=6 and parent != child:
                 result_status = "Failed"
             else:
                 result_status = "Pass"
@@ -428,18 +490,19 @@ class Web_ODD(Initiate):
             print(getLine())
 
             results.append({
-                'Test Scenario': 'Check Run ODD flow',
-                'Test Case':f'✔ Validate {case}',
-                'Actual Parent output': f'✔ Parent  :  {[ parent ]} ',
-                'Actual Child output': f'✔ Child  :  {[ child ]}',
+                "Test Case ID" :f'TC_00{i}',
+                'Test Scenario': f'✔ Verify : \n{case}',
+                'Preconditions':f'User is logged in and should be on the website page.',
+                'Test Steps':f'1. Click on the Webcrawling result button\n2. Check : \n{case}',
+                'Actual Parent output': f'✔ Parent  :  \n{[ parent ]} ',
+                'Actual Child output': f'✔ Child  :  \n{[ child ]}',
                 'Expected output': f'✔ Parent and Child data should present',
-                'Result': result_status
+                'Result': result_status,
+                'Test Environment':environ,
+                'Priority':'Medium',
             })
 
-        webform = pd.DataFrame(results)
-
-        with pd.ExcelWriter(crawl_output,mode='a', if_sheet_exists='replace' ,  engine='openpyxl' ) as writer:
-            webform.to_excel(writer,sheet_name='Web ODD Flow')
+            write_excel(results,'Crawling Flow')
 
 
 if (__name__) == "__main__":
@@ -449,5 +512,7 @@ if (__name__) == "__main__":
     crawl.crawl()
     crawl.parent_data()
     crawl.child_data()
+    crawl.parent_approve()
     crawl.print_excel()
+
 

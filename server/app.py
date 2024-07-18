@@ -57,7 +57,7 @@ class Web_Streamlit():
         password_input.send_keys(password)
         print(password)
 
-        terms_checkbox_ = self.driver.find_element(By.ID, login_check_box)
+        terms_checkbox_ = self.driver.find_element(By.XPATH, login_check_box)
         terms_checkbox_.click()
 
         login_btn = self.driver.find_element(By.XPATH, login_button)
@@ -118,6 +118,12 @@ class Web_Streamlit():
             Web_Crawl_Results.crawl_result(self)
         }
     
+    def web_file_upload(self):
+        from module.web_file_upload import File_Upload
+        self.login()
+        return File_Upload.crawl(self)
+        
+
     def web_run_odd(self):
         from module.web_odd_flow import Web_ODD
 
@@ -165,11 +171,11 @@ class Web_Streamlit():
 st.title("Web crawling flow with test cases")
 
 add_site = st.button("Add Site")
+web_crawl_elements  = st.button("Web Crawling Button")
 listing_page = st.button("Web List Page")
-web_crawl_elements  = st.button("Web Crawling Elements")
-# crawl_results = st.button("Crawl Results")
-run_odd = st.button("Run ODD")
-validate_list_page = st.button("Web Validate List")
+run_odd = st.button("Run ODD Flow")
+validate_list_page = st.button("Validate Listing Page")
+file_upload = st.button("Web File Upload")
 add_mutliple = st.button("Add Multiple Site")
 web_external = st.button("Web External Api")
 
@@ -184,6 +190,9 @@ try:
 
     if listing_page:
         Web_Streamlit().web_list_page()
+
+    if file_upload:
+        Web_Streamlit().web_file_upload()
 
     if run_odd:
         Web_Streamlit().web_run_odd()

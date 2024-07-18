@@ -1,0 +1,45 @@
+                                                                        
+✔ Title is correct :  Tutelar | Risk and Fraud Assessment | Fintech
+                                                                        
+✔ URL is correct : https://stgapp.tutelar.io/signin
+                                                                        
+✔ Login page gets visible
+                                                                        
+✔ User entered the email address.:syed.ahamed@ippopay.com
+                                                                        
+✔ User entered the password.: *******
+                                                                        
+✔ Terms and conditions check box clicked
+                                                                        
+✔ User clicked on the login button.
+                                                                        
+✔ User successfully logged in.
+                                                                        
+                                                                        
+                                                                        
+✔ Case id : tDvryPCWbaMYPBJb16hAZS
+                                                                        
+                                                                        
+✔ Crawled Website : 
+                                                                        
+                                                                        
+✔ Trade Name : Santos. Inc,
+                                                                        
+                                                                        
+✔ Created date : 14 Jul 2024 1:37 PM
+                                                                        
+                                                                        
+✔ Crawling Percentage : 54
+                                                                        
+                                                                        
+✔ Crawling Time taken : 13 min 5 sec
+                                                                        
+                                                                        
+✔ Crawling Status : Completed
+                                                                        
+                                                                        
+✔ Risk status : 54 [Medium]
+                                                                        
+                                                                        
+✔ Risk score : 54 [Medium]
+                                                                        

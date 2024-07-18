@@ -17,9 +17,10 @@ import random
 dir = os.getcwd()
 sys.path.append(dir)
 
-from utils.launch import Initiate
+from utils.launch import Initiate,environ
 from elements import webElements
 from excel_data.crawl_data import *
+from excel_data.check_excel import write_excel
 from helper import *
 from utils.operate import click_element, sendkeys_element
 
@@ -37,7 +38,7 @@ class Web_History_Page(Initiate):
         time.sleep(2)
 
         web_crawl = self.driver.find_element(By.XPATH, webElements.web_crawl_xpath)
-        click_element(web_crawl)
+        self.driver.execute_script("arguments[0].click();", web_crawl)
 
         # add_site = self.driver.find_element(By.XPATH, webElements.add_site_xpath)
         # click_element(add_site)
@@ -50,10 +51,8 @@ class Web_History_Page(Initiate):
         # trade_el = self.driver.find_element(By.XPATH, webElements.trade_xpath)
         # sendkeys_element(trade_el,self.trade)
 
-
         # crawling_drop = self.driver.find_element(By.XPATH, webElements.crawling_drop_xpath)
         # click_element(crawling_drop)
-
 
         # crawling_select = self.driver.find_element(By.XPATH, webElements.crawling_select_xpath)
         # click_element(crawling_select)
@@ -112,6 +111,11 @@ class Web_History_Page(Initiate):
                 risk_status = risk_status_element.text
                 print("the risk status is", risk_status)
 
+                time.sleep(1)
+                allure.attach(self.driver.get_screenshot_as_png(),name = f"Screenshot - Web Listing Page",attachment_type=AttachmentType.PNG)
+                time.sleep(1)
+
+
 
                 break
 
@@ -136,7 +140,7 @@ class Web_History_Page(Initiate):
         reports_element = self.driver.find_element(By.XPATH, webElements.reports_xpath)
         click_element(reports_element)
 
-        his_reports_element = self.driver.find_element(By.XPATH, webElements.his_reports_xpath)
+        his_reports_element = self.driver.find_element(By.LINK_TEXT, webElements.his_reports_xpath)
         click_element(his_reports_element)
 
         crawl_his_element = self.driver.find_element(By.XPATH, webElements.crawl_his_xpath)
@@ -177,6 +181,14 @@ class Web_History_Page(Initiate):
         reports_list_riskscore = self.driver.find_element(By.XPATH, webElements.reports_list_riskscore_xpath)
         risk_score = reports_list_riskscore.text
 
+        time.sleep(1)
+        allure.attach(self.driver.get_screenshot_as_png(),name = f"Screenshot - Crawling Histroy Report",attachment_type=AttachmentType.PNG)
+        time.sleep(1)
+
+        Web_History_Page.logout(self)
+
+
+
         self.report_list_data = [
             case_ID,
             web_url,
@@ -201,9 +213,9 @@ class Web_History_Page(Initiate):
 
         results = []
 
-        for actual,web_list,report_list in zip(self.actual_output,self.list_data,self.report_list_data):
+        for i, (actual,web_list,report_list) in enumerate(zip(self.actual_output,self.list_data,self.report_list_data),start=1):
             print(getLine())
-            print(f'✔ Web List : {web_list}, Report List : {report_list}')
+            print(f'✔ Web List : [{web_list}, Report List : {report_list}')
 
             if web_list != report_list:
                 result_status = "Failed"
@@ -213,18 +225,20 @@ class Web_History_Page(Initiate):
             print(getLine())
 
             results.append({
-                'Test Scenario': 'Validate Web List and Report List',
-                'Expected output': f'✔  [ {actual} ]  =  Should be same',
+                "Test Case ID" :f'TC_00{i}',
+                'Test Scenario': f'Verify [ {actual} ] Should be same in both Crawling Listing page & history report page ',
+                'Preconditions':f'User is logged in and on the Web Crawling Listing page and history report page',
+                'Test Steps':f'1. Click on the Web Crawling Listing \n2. Check [ {actual} ] present in crawling listing page \n3. Click on the History Report -> Crawling History  \n4. Check [ {actual} ] present in crawling history report',
+                'Expected output': f'✔  [ {actual} ]  \nShould be same',
                 'Actual Web List output': f'✔  [{web_list}] ',
                 'Actual History List output': f'✔ [{report_list}]',
-
-                'Result': result_status
+                'Result': result_status,
+                'Test Environment':environ,
+                'Priority':'Medium',
             })
+            write_excel(results,'Validate Listing Data')
 
-        webform = pd.DataFrame(results)
 
-        with pd.ExcelWriter(crawl_output,mode='a', if_sheet_exists='replace' ,  engine='openpyxl' ) as writer:
-            webform.to_excel(writer,sheet_name='Web report validate')
 
 
 

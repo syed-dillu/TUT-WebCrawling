@@ -17,9 +17,11 @@ import os
 dir = os.getcwd()
 sys.path.append(dir)
 
-from utils.launch import Initiate
+from utils.launch import Initiate, environ
 from elements import webElements
 from excel_data.crawl_data import *
+from excel_data.check_excel import write_excel
+
 from helper import *
 
 
@@ -27,6 +29,64 @@ from helper import *
 class Web_UI_Elements(Initiate):
 
     results = []
+
+    def validation(self,element,text):
+
+        response = []
+        buttons = []
+
+        buttons.append(text)
+        print(buttons)
+
+        if not text:
+            response.append(f"[ ]")
+
+        try:
+
+            self.wait.until(EC.element_to_be_clickable(element))
+
+            element.click()
+
+            time.sleep(1)
+            allure.attach(self.driver.get_screenshot_as_png(),name = f"Screenshot - {text}",attachment_type=AttachmentType.PNG)
+
+            response.append(f"[ {text} ]  -  Button responding")
+
+        except Exception as e:
+
+            response.append(f"[ {text} ]  -  Button not responding")
+        
+
+
+        for i, j in zip(response, buttons):
+
+            getLine()
+            print(f'✔ [{j}, Buttons : {i}')
+
+
+
+            if "Button not responding" in i or "[ ]" in i :
+                result_status = "Failed"
+            else:
+                result_status = "Pass"
+
+            if ("test" in j):
+                continue
+   
+            self.results.append({
+                "Test Case ID" :f'TC_001',
+                'Test Scenario': f' ✔ Verify :\n[ {j} ] button',
+                'Preconditions':f'User is logged in and on the Web Crawling page',
+                'Test Steps':f'1. Click on the Web Crawling button\n2. Check : [ {j} ] \nbutton responding or not ',
+                'Actual Output': f' ✔  {i}  ',
+                'Expected Output':f' ✔ [ {j} ]  \nbutton should respond ',
+                'Result': result_status,
+                'Test Environment':environ,
+                'Priority':'Medium',
+
+            })
+
+            write_excel(self.results,'Web Elements')
 
     def crawl(self):
 
@@ -37,15 +97,15 @@ class Web_UI_Elements(Initiate):
         time.sleep(2)
 
         web_crawl = self.driver.find_element(By.XPATH, webElements.web_crawl_xpath)
-        web_main = web_crawl.text
-        self.validation(web_crawl,web_main)
+        self.driver.execute_script("arguments[0].click();", web_crawl)
 
         web_side_element = self.driver.find_element(By.XPATH, webElements.web_history_xpath)
         web_side = web_side_element.text
 
-
         web_title = self.driver.find_element(By.XPATH, webElements.web_title_xpath)
         web_title_text = web_title.text
+        self.validation(web_title,web_title_text)
+
 
         filter_element = self.driver.find_element(By.XPATH, webElements.filter_btn_xpath)
         filter_text = filter_element.text
@@ -75,17 +135,16 @@ class Web_UI_Elements(Initiate):
         self.validation(file_upload_element,file_text)
         time.sleep(1)
 
-
         download_sample_element = self.driver.find_element(By.XPATH,webElements.down_load_xpath)
         downsample_text = download_sample_element.text
         self.validation(download_sample_element,downsample_text)
 
         time.sleep(1)
 
-        file_upload_btn= self.driver.find_element(By.XPATH,webElements.file_upload_btn_xpath)
-        file_upload_btn_text = file_upload_btn.text
-        self.validation(file_upload_btn,file_upload_btn_text)
-
+        file_upload_btn= self.driver.find_element(By.ID,webElements.file_upload_btn_xpath)
+        time.sleep(1)
+        file_upload_btn.send_keys(crawl_file_upload[0])
+        time.sleep(1)
         self.driver.back()
 
         time.sleep(1)
@@ -108,6 +167,10 @@ class Web_UI_Elements(Initiate):
 
         more_rejt_block = self.driver.find_element(By.XPATH, webElements.more_rejt_block_xpath)
         more_reject_block_text = more_rejt_block.text
+
+        time.sleep(1)
+
+        self.driver.refresh()
 
         menu_icon = self.driver.find_element(By.XPATH, webElements.menu_icon_xpath)
         menu_icon_text = "Action menu icon"
@@ -145,7 +208,7 @@ class Web_UI_Elements(Initiate):
         time.sleep(1)
 
         json_copy_ele = self.driver.find_element(By.XPATH, webElements.json_copy_xpath)
-        json_copy_ele_text = json_copy_ele.text
+        json_copy_ele_text = "Copy json"
         self.validation(json_copy_ele,json_copy_ele_text)
         time.sleep(1)
 
@@ -187,9 +250,11 @@ class Web_UI_Elements(Initiate):
         crawl_place_100_text = crawl_place_100.text
         self.validation(crawl_place_100,crawl_place_100_text)
 
+        Web_UI_Elements.logout(self)
+
+
         web_text_buttons_list = {
 
-            "Web main menu" : web_main,
             "Web side menu" : web_side,
             "Web page title" : web_title_text,
             "Filter text" : filter_text,
@@ -217,7 +282,7 @@ class Web_UI_Elements(Initiate):
 
         }
 
-        for key , value in web_text_buttons_list.items():
+        for i,(key , value) in enumerate(web_text_buttons_list.items(),start=1):
             print(f' {key} : {value}')
             if not value:
                 results_status = "Failed"
@@ -225,75 +290,27 @@ class Web_UI_Elements(Initiate):
                 results_status = "Pass"
 
             self.results.append({
-
-                'Test Scenario': ' ✔ Check button displayed or not ',
-                'Test Case':f' ✔ Check = [ {key} ] = displayed or not ',
-                'Actual Output': f' ✔ {key}  :  [ {value} ] ',
-                'Expected Output': f' ✔ [ {key} ] should display',
+                "Test Case ID" :f'TC_00{i}',
+                'Test Scenario': f' ✔ Verify :\n[ {key} ] ',
+                'Preconditions':f'User is logged in and on the Web Crawling page',
+                'Test Steps':f'1. Click on the Web Crawling button\n2. Check :\n[ {key} ] displayed or not ',
+                'Actual Output': f' ✔ {key}  :\n[ {value} ] ',
+                'Expected Output': f' ✔ [ {key} ]\nshould display',
+                'Test Environment':environ,
+                'Priority':'Medium',
                 'Result': results_status
 
             })
 
-        web_form = pd.DataFrame(self.results)
+        #write_excel(self.results,'Web Elements')
 
-        with pd.ExcelWriter(crawl_output,mode='a',if_sheet_exists='replace',engine='openpyxl') as writer:
-            web_form.to_excel(writer, sheet_name='Web crawl buttons')
-
-
-    def validation(self,element,text):
-
-        response = []
-        buttons = []
-
-        buttons.append(text)
-        print(buttons)
-
-        if not text:
-            response.append(f"[ ]")
-
-        try:
-
-            self.wait.until(EC.element_to_be_clickable(element))
-
-            element.click()
-
-            response.append(f"[ {text} ]  -  Button responding")
-
-        except Exception as e:
-
-            response.append(f"[ {text} ]  -  Button not responding")
-        
-
-
-        for i,j in zip(response,buttons):
-
-            if "Button not responding" in i or "[ ]" in i :
-                result_status = "Failed"
-            else:
-                result_status = "Pass"
-
-            if (i == "[ test ]  -  Button responding"):
-                continue
-   
-            self.results.append({
-
-                'Test Scenario': ' ✔ Check button responding or not',
-                'Test Case':f' ✔ Check = [ {j} ]  =  button responding or not ',
-                'Actual Output': f' ✔  {i}  ',
-                'Expected Output':f' ✔ [ {j} ]  =  button should respond ',
-                'Result': result_status
-
-            })
-
-        button_valid = pd.DataFrame(self.results)
-        with pd.ExcelWriter(crawl_output,mode='a', if_sheet_exists='replace',engine='openpyxl')as writer:
-            button_valid.to_excel(writer,sheet_name='Web crawl buttons')
 
 if (__name__) == "__main__":
     crawl = Web_UI_Elements()
     crawl.browser()
     crawl.login()
     crawl.crawl()
+
 
 
 

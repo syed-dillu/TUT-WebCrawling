@@ -8,18 +8,19 @@ from allure_commons.types import AttachmentType
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 import time
-from openpyxl.styles import Alignment
 import pandas as pd
 import sys
+import openpyxl
 import os
 
 dir = os.getcwd()
 
 sys.path.append(dir)
 
-from utils.launch import Initiate
+from utils.launch import Initiate,environ
 from elements import webElements
 from excel_data.crawl_data import get_crawl_input,crawl_output
+from excel_data.check_excel import write_excel
 from utils.operate import click_element, sendkeys_element, get_screenshot
 
 
@@ -29,9 +30,9 @@ class Web_Add_Site(Initiate):
         self.driver.implicitly_wait(50)
 
 
-        web_crawl = self.driver.find_element(By.XPATH, webElements.web_crawl_xpath)
-        click_element(web_crawl)
 
+        web_crawl = self.driver.find_element(By.XPATH, webElements.web_crawl_xpath)
+        self.driver.execute_script("arguments[0].click();", web_crawl)
 
         results =[]
 
@@ -40,6 +41,9 @@ class Web_Add_Site(Initiate):
             case = data['Case']
             website = data['Website URL']
             tradename = data['Trade Name']
+            address = data['Address']
+            crawl_type = data['Crawl Type']
+
             expected_result = data['Expected Results']
             Test_case = data['Test Data For Web Form']
 
@@ -56,11 +60,12 @@ class Web_Add_Site(Initiate):
             trade_el = self.driver.find_element(By.XPATH, webElements.trade_xpath)
             sendkeys_element(trade_el,tradename)
 
+
+
             if website != '':
 
                 crawling_drop = self.driver.find_element(By.XPATH, webElements.crawling_drop_xpath)
                 click_element(crawling_drop)
-
 
                 crawling_select = self.driver.find_element(By.XPATH, webElements.crawling_select_xpath)
                 click_element(crawling_select)
@@ -68,33 +73,52 @@ class Web_Add_Site(Initiate):
 
             time.sleep(1)
 
+            address_el = self.driver.find_element(By.XPATH, webElements.address_add_xpath)
+            sendkeys_element(address_el,address)
 
             crawling_btn = self.driver.find_element(By.XPATH, webElements.crawling_btn_xpath)
             click_element(crawling_btn)
 
 
-            time.sleep(2)
+            time.sleep(1)
+
+            allure.attach(self.driver.get_screenshot_as_png(),name = f"Screenshot - {Test_case}",attachment_type=AttachmentType.PNG)
+            time.sleep(1)
+
+
+
 
             #get_screenshot(Test_case)
 
+            time.sleep(2)
+            self.driver.execute_script("alert(' Your system is hacked!');")
+            time.sleep(2)
+            alert = self.wait.until(EC.alert_is_present())
+            alert.accept()
+
             self.driver.refresh()
+
+            if case == 9:
+                Web_Add_Site.logout(self)
 
             results.append({
 
-    'Test Case ID': f'✔ TC_ADD_00{case}',
-    'Test Scenario': '✔ Check Add Site',
-    'Test Case':f'✔ Check with : {Test_case}',
-    'Input data': f'✔ Website : [ {website} ]    /    Trade : [ {tradename} ]',
+    'Test Case ID': f'✔ TC_00{case}',
+    'Test Scenario': f'✔ Verify with : \n{Test_case}',
+    'Preconditions':f'User is logged in and on the Web Crawling -> "Add Site" page',
+    'Test Steps':f"1. Click on the 'Add Site' button\n2.  Check with : \n{Test_case}\n3. Click on the 'Submit' button",
+    'Input data': f'1. Website : [ {website} ] \n2. Trade : [ {tradename} ] \n3. Crawl Type : [ {crawl_type} ] \n4. Address : [ {address} ]   ',
     'Expected output': expected_result,
     'Actual output': expected_result,
-    'Result': 'Pass'
-
+    'Result': 'Pass',
+    'Test Environment':environ,
+    'Priority':'High',
+   
 })
+            print(results)
+            
+            write_excel(results,'Add Site')
 
-            webform = pd.DataFrame(results)
-
-            with pd.ExcelWriter(crawl_output, mode='a',if_sheet_exists='replace', engine='openpyxl') as writer:
-                webform.to_excel(writer,sheet_name='Add Site',index=False)
 
 
 if (__name__) == "__main__":

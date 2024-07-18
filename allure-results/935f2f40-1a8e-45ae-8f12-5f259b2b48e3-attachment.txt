@@ -1,0 +1,10 @@
+✔ User entered the email address.:syed.ahamed@ippopay.com
+                                                                        
+✔ User entered the password.: *******
+                                                                        
+                                                                        
+Profile
+Account Settings
+limit File Upload Limits
+10
+file datas are ['No data found', 'Maximum File Upload Limits\n10', 'File uploaded successfully', 'Website URL should not be empty/invalid', 'Trade Name should not be empty/invalid', 'Crawling type should not be empty/invalid']

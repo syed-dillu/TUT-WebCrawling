@@ -31,7 +31,7 @@ class WebCrawl(Initiate):
     
 
     def crawl(self):
-        countweb = 5
+        countweb = 3
 
         self.count_loop = 0
 
@@ -43,7 +43,7 @@ class WebCrawl(Initiate):
         time.sleep(1)
 
         web_crawl = self.driver.find_element(By.XPATH, webElements.web_crawl_xpath)
-        click_element(web_crawl)
+        self.driver.execute_script("arguments[0].click();", web_crawl)
 
         for url,trade in zip(self.web_url,self.trade_name):
             print("Case : ",self.count_loop)
@@ -80,6 +80,9 @@ class WebCrawl(Initiate):
 
             if(self.count_loop == countweb):
                  break
+            
+        WebCrawl.logout(self)
+
 
         return {
         "status" : "Success",
@@ -93,3 +96,4 @@ if (__name__) == "__main__":
     crawl.browser()
     crawl.login()
     crawl.crawl()
+

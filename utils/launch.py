@@ -8,15 +8,19 @@ from dotenv import load_dotenv
 import sys
 import allure
 import os
+
 myDir = os.getcwd()
 sys.path.append(myDir)
-from helper import *
 
+from helper import *
+from elements import webElements
 load_dotenv()
 from elements.loginElements import *
 from messages.loginMessage import *
-
+environ = os.getenv("ENVIRON")
 url = os.getenv("URL")
+url_tut = os.getenv("URL_TUT")
+
 email = os.getenv("EMAIL")
 password = os.getenv("PASSWORD")
 
@@ -25,12 +29,10 @@ email_web = os.getenv("EMAIL_WEB")
 password_web = os.getenv("PASSWORD_WEB")
 
 
-
-
 class Initiate():
     driver = webdriver.Chrome()
-    #driver = webdriver.Firefox()
-    #driver = webdriver.Edge()
+    # driver = webdriver.Firefox()
+    # driver = webdriver.Edge()
     # driver = webdriver.Safari()
 
     driver.maximize_window()
@@ -88,7 +90,7 @@ class Initiate():
         print(getLine())
 
 
-        check_box = self.driver.find_element(By.ID, login_check_box)
+        check_box = self.driver.find_element(By.XPATH, login_check_box)
         check_box.click()
         print(check_box_login)
         print(getLine())
@@ -109,13 +111,61 @@ class Initiate():
         allure.attach(self.driver.get_screenshot_as_png(), name="Dashboard Page", attachment_type=AttachmentType.PNG)
 
 
-
-        return 'loggedin successfully'   
+        return 'loggedin successfully' 
     
+    def logout_login(self):
+
+        profile_email = self.driver.find_element(By.XPATH, webElements.profile_email_xpath)
+        profile_email.click()
+        time.sleep(1)
+
+        logout_element = self.driver.find_element(By.XPATH, logout_xpath)
+        logout_element.click()
+
+        time.sleep(3)
+
+        email_id = self.driver.find_element(By.NAME,login_email)
+        email_id.send_keys(email)
+        print(f'{email_enter}:{email}')
+        print(getLine())
+
+        pass_i = self.driver.find_element(By.NAME, login_pass)
+        pass_i.send_keys(password)
+        print(f'{password_enter}: *******')
+        print(getLine())
+
+        button = self.driver.find_element(By.XPATH, login_button)
+        button.click()
+
+        print(getLine())
+        time.sleep(2)
+        allure.attach(self.driver.get_screenshot_as_png(), name="Dashboard Page", attachment_type=AttachmentType.PNG)
+
+
+        return 'loggedin successfully' 
+
+
+    def logout(self):
+        time.sleep(1)
+
+        profile_email = self.driver.find_element(By.XPATH, webElements.profile_email_xpath)
+        profile_email.click()
+        time.sleep(2)
+
+        logout_element = self.driver.find_element(By.XPATH, logout_xpath)
+        logout_element.click()
+        time.sleep(1)
+        print("Logged out successfully")
+
+
+
+
 if (__name__) == ("__main__"):
 
     s = Initiate()
     s.browser()
     s.login()
+    s.logout_login()
     time.sleep(10)
+
 
